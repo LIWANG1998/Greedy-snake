@@ -1,6 +1,5 @@
 <template>
   <div class="home" :style="grassland_f">
-    <span class="start" @click="start">开始{{ snake_f }}</span>
     <!-- 食物 -->
     <div class="snake_body" :style="snakes_style(food)"></div>
     <!-- 蛇 -->
@@ -14,7 +13,6 @@
              :style="Object.assign(snakes_style(v) , {transition:`all ${snake_s}s linear`})"></div>
       </template>
     </template>
-    <!--    </div>-->
   </div>
 </template>
 
@@ -25,9 +23,9 @@ export default {
   data() {
     return {
       // 蛇的大小/px
-      snake_w: 20,
+      snake_w: 5,
       // 蛇的速度/秒
-      snake_s: 0.2,
+      snake_s: 0.10,
       // 运动方向
       snake_f: 38,
       // 贪吃蛇
@@ -39,8 +37,8 @@ export default {
       },
       // 草地大小
       grassland: {
-        g_w: 800, // 高度
-        g_h: 800, // 宽度
+        g_w: 100, // 高度
+        g_h: 100, // 宽度
       },
       // 开始/暂停
       start_t: false,
@@ -169,12 +167,15 @@ export default {
     },
     // 随机出食物
     out_food_fun() {
-      if (this.snakes.some((v) => {
-        return JSON.stringify(v) === JSON.stringify(this.out_food())
-      })) {
+      let a_food = this.out_food();
+      this.food = a_food;
+      let b_t = this.snakes.some((v) => {
+        return v.loc_t === this.food.loc_t && v.loc_l === this.food.loc_l
+      })
+      if (b_t) {
         this.out_food_fun();
       } else {
-        this.food = this.out_food();
+        this.food = a_food;
       }
     }
   }
@@ -183,8 +184,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .home {
-  background-color: powderblue;
-  margin: 40px auto;
+  background-color: #172728;
+  margin: 800px 0 0 1300px;
   position: relative;
 
   .start {
