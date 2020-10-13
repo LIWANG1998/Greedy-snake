@@ -1,18 +1,40 @@
 <template>
-  <div class="home" :style="grassland_f">
-    <!-- 食物 -->
-    <div class="snake_body" :style="snakes_style(food)"></div>
-    <!-- 蛇 -->
-    <template v-for="(v , i) in snakes">
-      <template v-if="i===0">
-        <div class="snake_body" :key="i" style="border-radius:50%;background-color:brown;z-index: 1"
-             :style="Object.assign(snakes_style(v) , {transition:`all ${snake_s}s linear`})"></div>
+  <div class="home">
+    <div class="home-dom">
+      <h1>我是首页</h1>
+      <router-link to=""></router-link>
+    </div>
+    <div class="snake-game" :style="grassland_f">
+      <!-- 食物 -->
+      <div class="snake_body" :style="snakes_style(food)"></div>
+      <!-- 蛇 -->
+      <template v-for="(v, i) in snakes">
+        <template v-if="i === 0">
+          <div
+            class="snake_body"
+            :key="i"
+            style="border-radius:50%;background-color:brown;z-index: 1"
+            :style="
+              Object.assign(snakes_style(v), {
+                transition: `all ${snake_s}s linear`
+              })
+            "
+          ></div>
+        </template>
+        <template v-else>
+          <div
+            class="snake_body"
+            :key="i"
+            style="border-radius:25%;background-color:#ffa000"
+            :style="
+              Object.assign(snakes_style(v), {
+                transition: `all ${snake_s}s linear`
+              })
+            "
+          ></div>
+        </template>
       </template>
-      <template v-else>
-        <div class="snake_body" :key="i" style="border-radius:25%;background-color:#ffa000"
-             :style="Object.assign(snakes_style(v) , {transition:`all ${snake_s}s linear`})"></div>
-      </template>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -25,7 +47,7 @@ export default {
       // 蛇的大小/px
       snake_w: 5,
       // 蛇的速度/秒
-      snake_s: 0.10,
+      snake_s: 0.1,
       // 运动方向
       snake_f: 38,
       // 贪吃蛇
@@ -33,28 +55,36 @@ export default {
       // 食物
       food: {
         loc_t: 100, // 距上
-        loc_l: 20, // 距左
+        loc_l: 20 // 距左
       },
       // 草地大小
       grassland: {
         g_w: 100, // 高度
-        g_h: 100, // 宽度
+        g_h: 100 // 宽度
       },
       // 开始/暂停
       start_t: false,
       start_ts: null
-    }
+    };
   },
   computed: {
     // 处理草地的样式在返回去
     grassland_f() {
-      return {width: this.grassland.g_w + 'px', height: this.grassland.g_h + 'px'}
+      return {
+        width: this.grassland.g_w + "px",
+        height: this.grassland.g_h + "px"
+      };
     },
     // 处理蛇的位置
     snakes_style(v) {
-      return (v) => {
-        return {width: this.snake_w + 'px', height: this.snake_w + 'px', left: v.loc_l + 'px', top: v.loc_t + 'px'}
-      }
+      return v => {
+        return {
+          width: this.snake_w + "px",
+          height: this.snake_w + "px",
+          left: v.loc_l + "px",
+          top: v.loc_t + "px"
+        };
+      };
     }
   },
   watch: {},
@@ -82,30 +112,35 @@ export default {
       this.start_ts = setInterval(() => {
         let snake_s = JSON.parse(JSON.stringify(this.snakes[0]));
         switch (this.snake_f) {
-            // 上
+          // 上
           case 38:
             // console.log(this.snake_f)
             snake_s.loc_t = snake_s.loc_t - this.snake_w;
             break;
-            // 右
+          // 右
           case 39:
             // console.log(this.snake_f)
             snake_s.loc_l = snake_s.loc_l + this.snake_w;
             break;
-            // 下
+          // 下
           case 40:
             // console.log(this.snake_f)
             snake_s.loc_t = snake_s.loc_t + this.snake_w;
             break;
-            // 左
+          // 左
           case 37:
             // console.log(this.snake_f)
             snake_s.loc_l = snake_s.loc_l - this.snake_w;
             break;
         }
-        if (snake_s.loc_l < 0 || snake_s.loc_l >= this.grassland.g_w || snake_s.loc_t < 0 || snake_s.loc_t >= this.grassland.g_h) {
-          clearInterval(this.start_ts)
-          return
+        if (
+          snake_s.loc_l < 0 ||
+          snake_s.loc_l >= this.grassland.g_w ||
+          snake_s.loc_t < 0 ||
+          snake_s.loc_t >= this.grassland.g_h
+        ) {
+          clearInterval(this.start_ts);
+          return;
         }
         // 添加头部
         this.snakes.unshift(snake_s);
@@ -116,7 +151,7 @@ export default {
           // 运动时候删除尾部 添加头部(在上面)
           this.snakes.pop();
         }
-      }, this.snake_s * 1000)
+      }, this.snake_s * 1000);
     },
     // 键盘事件
     keydown(e) {
@@ -162,16 +197,16 @@ export default {
       let s_max_g_w = this.grassland.g_w / this.snake_w;
       return {
         loc_t: parseInt(Math.random() * s_max_g_h) * this.snake_w, // 距上
-        loc_l: parseInt(Math.random() * s_max_g_w) * this.snake_w, // 距左
+        loc_l: parseInt(Math.random() * s_max_g_w) * this.snake_w // 距左
       };
     },
     // 随机出食物
     out_food_fun() {
       let a_food = this.out_food();
       this.food = a_food;
-      let b_t = this.snakes.some((v) => {
-        return v.loc_t === this.food.loc_t && v.loc_l === this.food.loc_l
-      })
+      let b_t = this.snakes.some(v => {
+        return v.loc_t === this.food.loc_t && v.loc_l === this.food.loc_l;
+      });
       if (b_t) {
         this.out_food_fun();
       } else {
@@ -179,13 +214,22 @@ export default {
       }
     }
   }
-}
-;
+};
 </script>
 <style lang="scss" scoped>
 .home {
+  .home-dom {
+    height: 400px;
+    width: 200px;
+    background-color: #a6d2ff;
+    margin: 0 auto;
+    text-align: center;
+  }
+}
+
+.snake-game {
   background-color: #172728;
-  margin: 800px 0 0 1300px;
+  margin: 0 auto;
   position: relative;
 
   .start {
@@ -193,7 +237,7 @@ export default {
   }
 
   /* 蛇的公共样式 */
-  @mixin snake_w($w_h, $h_t,$b_r,$b_c) {
+  @mixin snake_w($w_h, $h_t, $b_r, $b_c) {
     position: absolute;
     width: $w_h;
     height: $h_t;
@@ -202,11 +246,11 @@ export default {
   }
 
   #snake_head {
-    @include snake_w(20px, 20px, 50%, brown)
+    @include snake_w(20px, 20px, 50%, brown);
   }
 
   .snake_body {
-    @include snake_w(20px, 20px, 5px, #ffa000)
+    @include snake_w(20px, 20px, 5px, #ffa000);
   }
 }
 </style>
